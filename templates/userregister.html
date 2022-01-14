@@ -1,0 +1,127 @@
+<!--Primero se extiende el archivo del layout que se usara en el-->
+{% extends "layout.html" %}
+<!--Ahora se especifica que parte de este archivo ira en el bloque que varia en el layout-->
+{% block content %}
+
+
+
+<!--Como en esta plantilla cuando se registre o edite alguien nuevo se enviara un mansaje con flash, primero asignamos 
+ese posible mensaje a messages, with es la forma de declarar una variable cuando se esta aqui-->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="//cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+
+{% with messages = get_flashed_messages() %}
+    <!--Ahora comprobaremos si la variable esta vacia o no, si esta vacia es que no ha realizado nada
+    asi que no mostraremos mensaje alguno, pero si contiene infoormacion se mostrara el mensaje correspondiente-->
+    {% if messages %}
+    <!--Se recorrera cada mensaje en el arreglo de mensajes-->
+        {% for message in messages %}
+            <script>
+                message = (message)=>{
+                    Swal.fire({
+                        icon: "success",
+                        title: "¡Hecho!",
+                        text: message,
+                    });
+                }
+                message('{{message}}');
+            </script>
+        {% endfor %}
+    {% endif %}
+{% endwith %}<!--el endwith marca hasta donde estara viva la variable creada-->
+
+
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card card-body">
+            <h5 class="card-title">Registrar Nuevo Contacto</h5>
+            <form action="/addcontact" method="POST">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="firstname" placeholder="Nombre(s)">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="lastname" placeholder="Apellido(s)">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="text" name="phone" placeholder="Numero de telefono">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" type="email" name="email" placeholder="Correo Electronico">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success form-control" type="submit">
+                        Registrarse
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-9">
+        
+            <table class="table table-striped table-bordered bg-white table-sm" id="contactstbl">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Nombre(s)</td>
+                        <td>Apellido(s)</td>
+                        <td>Telefono</td>
+                        <td>Email</td>
+                        <td>Operaciones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in contacts %}
+                        <tr>
+                            <td>{{contact.0}}</td>
+                            <td>{{contact.1}}</td>
+                            <td>{{contact.2}}</td>
+                            <td>{{contact.3}}</td>
+                            <td>{{contact.4}}</td>
+                            <td>
+                                <a class="btn btn-warning" href="/edit/{{contact.0}}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                    </svg>
+                                </a>
+                                <!--La clase btn-delete fue creada para el ejercicio-->
+                                <a class="btn btn-danger btn-delete" onclick="ConfirmDelete('{{contact.0}}')" >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                                    </svg>    
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        
+        
+    </div>
+</div>
+
+<script>
+
+    function ConfirmDelete(id){
+        Swal.fire({
+            title: 'Estas seguro?',
+            text: "No podras revertir la accion!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirmar',
+            
+            }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/delete/"+id;
+            }
+        });
+        
+    }
+
+</script>
+
+{% endblock %}

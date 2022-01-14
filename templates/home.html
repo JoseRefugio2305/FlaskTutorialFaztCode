@@ -1,0 +1,39 @@
+<!--Primero se extiende el archivo del layout que se usara en el-->
+{% extends "layout.html" %}
+<!--Ahora se especifica que parte de este archivo ira en el bloque que varia en el layout-->
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Hola!</h1>
+    <p class="lead">Este es un Sistema Web simple hecho con Python Flask</p>
+    <hr class="my-4">
+    <p>Solo Se presentara esta pagina y un sistema de registro simple</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('formregistro')}}" role="button">Registrarse</a>
+</div>
+
+
+<ul id="messages"></ul>
+
+<input type="text" id="myMessage">
+
+<button type="button" id="send">Send</button>
+<!--Librerias de jquery-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<!--Libreria de socketio-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    //inicializamos el socket
+    const socket =io();
+
+    
+    //revisamos si se recibio algun mensaje en el lado del cliente, si fue asi, lo agregamos al ul
+    socket.on('message', function(msg){
+        $('#messages').append('<li>'+msg+'</li>')
+    });
+    //enviamos el mensaje cuando se oprima el boton
+    $('#send').on('click', function(e){
+        socket.send($('#myMessage').val());
+        $('#myMessage').val('');
+    });
+</script>
+{% endblock %}
